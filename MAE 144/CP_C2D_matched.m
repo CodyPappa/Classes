@@ -10,6 +10,7 @@ m=Ds.num.n; n=Ds.den.n;
 for j=1:m; z(j)= exp(Ds.z(j)*h);  end %map Zeros to z plane
 for j=1:n; p(j)= exp(Ds.p(j)*h);  end %map poles to z plane
 
+
 Dz = RR_tf(z,p,1);
 
 end
