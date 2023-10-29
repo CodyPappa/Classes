@@ -1,17 +1,16 @@
 %CP_C2D_matched.m
-%syms z1 p1 
-syms s
+
+close all
+clear
 z1=1;
 p1=10;
-Ds = RR_tf([-z1],[0 , -p1],1);
+Ds = RR_tf([-z1],[0 , -p1],1);  % build the transfer function
 h = .01; 
-%[Dz] = CP_C2D_matched(Ds, h);
+%setup vars
+Dz= CP_C2D_matched(Ds, h);
 
-%if nargin==2, p=1; omegabar =0; 
-%elseif nargin == 3, p =1; end
-m=Ds.num.n; n=Ds.den.n;
-for j=1:m; z(j)= exp(Ds.z(j)*h);  end %map Zeros to z plane
-for j=1:n; p(j)= exp(Ds.p(j)*h);  end %map poles to z plane
+%buld reference c2d with matched method
+DSref= tf([1,z1],[1, p1, 0]);
+Dzref = c2d(DSref, h, 'matched');   
 
 
-Dz = RR_tf(z,p,1);
