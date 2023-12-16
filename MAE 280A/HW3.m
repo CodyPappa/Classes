@@ -18,8 +18,10 @@ Ac=  [ 0 1 0; 0 0 1; -20 -24 -9];
 lamdaC= eig (Ac);
 
 [P,J]=jordan(Ac);
-
+Pi= inv(P);
 ejt= [exp(-5*t) 0 0; 0 exp(-2*t) t*exp(-2*t); 0 0 exp(-2*t)];
+
+eat= P*ejt*Pi;
 Qc=expm(Ac*t);
 
 fc(t)=Qc*x0;
@@ -27,5 +29,5 @@ yc=fc(time);
 yc1=yc{1};
 yc2=yc{2};
 yc3=yc{3};
-plot(time,yc1, time, yc2,time, yc3);
-legend('y(t)','y"(t)', 'y""(t)' )
+%plot(time,yc1, time, yc2,time, yc3);
+%legend('y(t)','y"(t)', 'y""(t)' )
