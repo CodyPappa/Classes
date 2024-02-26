@@ -93,12 +93,12 @@ thetalist0 = [deg2rad(-30), deg2rad(-90), deg2rad(90),deg2rad(-90),deg2rad(-90),
 [waypoint_array(19,:)]= IKinSpace(Slist, M, Head_release_clear, waypoint_array(18,:)', eomg, ev);
 [waypoint_array(20,:)]= IKinSpace(Slist, M, standby, waypoint_array(1,:)', eomg, ev);
 
-waypoint_array = rad2deg(waypoint_array);
-waypoint_array = rem(waypoint_array, 360);
+waypoint_array = rad2deg(waypoint_array); % change rad output to degree
+waypoint_array = rem(waypoint_array, 360); % remove extra 360 rotations outside of bounds
 
 gripperPos = [0,0,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,]';
 waypoint_array = cat(2,waypoint_array,gripperPos);
-
+ %finalize waypopint array with gripper values
 
 
 % Your code should end here
