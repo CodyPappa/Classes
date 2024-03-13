@@ -43,14 +43,16 @@ for n=2:8
 end
 
 %% Output array to config_array.csv
-% config_array.csv will be located in Matlab's current directory
+% config_array.csv will be located in Matlab's current directory.
+
 % preallocate size of our output matrix
 leng= sum(N);
 outputConfigs = zeros(leng,13);
 line = 1; %a counter to output each Transformation matrix as a line
 for n=1:8  %n cycles through the 8 traj
     for i= 1:N(n) % i cycles through the T matrices inside each traj
-    outputConfigs(line,:) = [traj{n,i}(1,1),traj{n,i}(1,2),traj{n,i}(1,3),traj{n,i}(2,1),traj{n,i}(2,2),traj{n,i}(2,3),traj{n,i}(3,1), traj{n,i}(3,2),traj{n,i}(3,3),traj{n,i}(1,4),traj{n,i}(2,4),traj{n,i}(3,4),Gripperstate(n)];
+    outputConfigs(line,:) = [traj{n,i}(1,1),traj{n,i}(1,2),traj{n,i}(1,3),traj{n,i}(2,1),traj{n,i}(2,2),...
+        traj{n,i}(2,3),traj{n,i}(3,1), traj{n,i}(3,2),traj{n,i}(3,3),traj{n,i}(1,4),traj{n,i}(2,4),traj{n,i}(3,4),Gripperstate(n)];
     line =line+1;
     end
 end    

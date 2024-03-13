@@ -1,0 +1,240 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      -->
+<title>TrajectoryGenerator</title>
+<meta name="generator" content="MATLAB 23.2">
+<link rel="schema.DC" href="http://purl.org/dc/elements/1.1/">
+<meta name="DC.date" content="2024-03-12">
+<meta name="DC.source" content="TrajectoryGenerator.m">
+<style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style>
+</head>
+<body>
+<div class="content">
+<h2>Contents</h2>
+<div>
+<ul>
+<li>
+<a href="#3">create Tse positions for all 8 trajectories</a>
+</li>
+<li>
+<a href="#4">add the state of the gripper for each trajectory</a>
+</li>
+<li>
+<a href="#5">simmulate Trajectorys between all 8 Tse positions</a>
+</li>
+<li>
+<a href="#6">Output array to config_array.csv</a>
+</li>
+</ul>
+</div>
+<pre class="codeinput">
+<span class="keyword">function</span> [outputConfigs] = TrajectoryGenerator(TseI,TscI, TscF, TceGrasp, TceStandoff, k)
+</pre>
+<pre class="codeinput">
+<span class="comment">% Trajectory Generator</span>
+<span class="comment">% Takes TseI: The initial config of the EE</span>
+<span class="comment">%      TscI: The initial config of the cube</span>
+<span class="comment">%      TscF: The final config of the cube</span>
+<span class="comment">%      TceGrasp: The config of the EE relative to the cube</span>
+<span class="comment">%      TceStandoff: The config of the EE relative to the cube to approach</span>
+<span class="comment">%      the cube from</span>
+<span class="comment">%      k: number of trajectory reference configs per 0.01 seconds. must be</span>
+<span class="comment">%      1 or greater</span>
+<span class="comment">% Returns outoutConfigs: an array containing all the configurations of the</span>
+<span class="comment">%      EE, one T per line, in order: r11,r12,r13,r21,r22,r23,r31,r32,r33,</span>
+<span class="comment">%      px, py, pz, gripperstate</span>
+
+<span class="comment">% This function calculates a trajectory corresponding to the screw motion</span>
+<span class="comment">% from TseI through all 8 defined trajectories. Outputs a CSV file that can</span>
+<span class="comment">% be loaded into CoppeliaSim to simulate EE trajectory for the task</span>
+<span class="keyword">if</span> k&lt;1
+    error(<span class="string">'k not greater then 1'</span>)
+<span class="keyword">end</span>
+</pre>
+<pre class="codeoutput error">Not enough input arguments.
+
+Error in TrajectoryGenerator (line 18)
+if k&lt;1
+</pre>
+<h2 id="3">create Tse positions for all 8 trajectories</h2>
+<pre class="codeinput">Startpos = TseI;
+pos{1} = TscI*TceStandoff;    <span class="comment">%position of EE at block location, adjusted by standoff matrix</span>
+pos{2}= TscI*TceGrasp;        <span class="comment">% position of EE at block pickup location and oreintation</span>
+pos{3}= pos{2};                 <span class="comment">%same postion, just close the gripper and wait</span>
+pos{4}= pos{1};                 <span class="comment">%back up to Pickup Standoff position, just with gripper closed</span>
+pos{5}= TscF*TceStandoff;
+pos{6}= TscF*TceGrasp;
+pos{7}= pos{6};                 <span class="comment">%same position just open gripper and wait</span>
+pos{8}= pos{5};                 <span class="comment">%back up to Final Standoff Position, with the gripper open</span>
+</pre>
+<h2 id="4">add the state of the gripper for each trajectory</h2>
+<pre class="codeinput">Gripperstate = [0, 0, 1, 1, 1, 1, 0, 0, 0];
+</pre>
+<h2 id="5">simmulate Trajectorys between all 8 Tse positions</h2>
+<pre class="codeinput">
+<span class="comment">%function is traj = ScrewTrajectory(Xstart, Xend, Tf, N, method)</span>
+<span class="comment">% set the time in seconds for each motion to occur</span>
+t= [5 1 1 1 4 1 1 1];
+N= t.*k/.01; <span class="comment">%how many intermeadate steps are needed for the motion to last T secconds</span>
+traj(1,:)= ScrewTrajectory(Startpos, pos{1}, t(1), N(1),5);
+<span class="keyword">for</span> n=2:8
+    traj(n,1:N(n))=ScrewTrajectory(pos{n-1}, pos{n}, t(n), N(n),5);
+<span class="keyword">end</span>
+</pre>
+<h2 id="6">Output array to config_array.csv</h2>
+<p>config_array.csv will be located in Matlab's current directory.</p>
+<pre class="codeinput">
+<span class="comment">% preallocate size of our output matrix</span>
+leng= sum(N);
+outputConfigs = zeros(leng,13);
+line = 1; <span class="comment">%a counter to output each Transformation matrix as a line</span>
+<span class="keyword">for</span> n=1:8  <span class="comment">%n cycles through the 8 traj</span>
+    <span class="keyword">for</span> i= 1:N(n) <span class="comment">% i cycles through the T matrices inside each traj</span>
+    outputConfigs(line,:) = [traj{n,i}(1,1),traj{n,i}(1,2),traj{n,i}(1,3),traj{n,i}(2,1),traj{n,i}(2,2),<span class="keyword">...</span>
+        traj{n,i}(2,3),traj{n,i}(3,1), traj{n,i}(3,2),traj{n,i}(3,3),traj{n,i}(1,4),traj{n,i}(2,4),traj{n,i}(3,4),Gripperstate(n)];
+    line =line+1;
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+writematrix(outputConfigs,<span class="string">'config_array.csv'</span>)
+</pre>
+<pre class="codeinput">
+<span class="keyword">end</span>
+</pre>
+<p class="footer">
+<br>
+<a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2023b</a>
+<br>
+</p>
+</div>
+<!--
+##### SOURCE BEGIN #####
+function [outputConfigs] = TrajectoryGenerator(TseI,TscI, TscF, TceGrasp, TceStandoff, k)
+% Trajectory Generator
+% Takes TseI: The initial config of the EE
+%      TscI: The initial config of the cube
+%      TscF: The final config of the cube
+%      TceGrasp: The config of the EE relative to the cube
+%      TceStandoff: The config of the EE relative to the cube to approach
+%      the cube from
+%      k: number of trajectory reference configs per 0.01 seconds. must be
+%      1 or greater
+% Returns outoutConfigs: an array containing all the configurations of the
+%      EE, one T per line, in order: r11,r12,r13,r21,r22,r23,r31,r32,r33, 
+%      px, py, pz, gripperstate
+
+% This function calculates a trajectory corresponding to the screw motion
+% from TseI through all 8 defined trajectories. Outputs a CSV file that can
+% be loaded into CoppeliaSim to simulate EE trajectory for the task
+if k<1
+    error('k not greater then 1')
+end
+
+%% create Tse positions for all 8 trajectories
+Startpos = TseI;
+pos{1} = TscI*TceStandoff;    %position of EE at block location, adjusted by standoff matrix
+pos{2}= TscI*TceGrasp;        % position of EE at block pickup location and oreintation 
+pos{3}= pos{2};                 %same postion, just close the gripper and wait
+pos{4}= pos{1};                 %back up to Pickup Standoff position, just with gripper closed
+pos{5}= TscF*TceStandoff;
+pos{6}= TscF*TceGrasp;
+pos{7}= pos{6};                 %same position just open gripper and wait
+pos{8}= pos{5};                 %back up to Final Standoff Position, with the gripper open
+%% add the state of the gripper for each trajectory
+Gripperstate = [0, 0, 1, 1, 1, 1, 0, 0, 0];
+
+%% simmulate Trajectorys between all 8 Tse positions
+%function is traj = ScrewTrajectory(Xstart, Xend, Tf, N, method)
+% set the time in seconds for each motion to occur
+t= [5 1 1 1 4 1 1 1];
+N= t.*k/.01; %how many intermeadate steps are needed for the motion to last T secconds
+traj(1,:)= ScrewTrajectory(Startpos, pos{1}, t(1), N(1),5);
+for n=2:8
+    traj(n,1:N(n))=ScrewTrajectory(pos{n-1}, pos{n}, t(n), N(n),5);
+end
+
+%% Output array to config_array.csv
+% config_array.csv will be located in Matlab's current directory.
+
+% preallocate size of our output matrix
+leng= sum(N);
+outputConfigs = zeros(leng,13);
+line = 1; %a counter to output each Transformation matrix as a line
+for n=1:8  %n cycles through the 8 traj
+    for i= 1:N(n) % i cycles through the T matrices inside each traj
+    outputConfigs(line,:) = [traj{n,i}(1,1),traj{n,i}(1,2),traj{n,i}(1,3),traj{n,i}(2,1),traj{n,i}(2,2),...
+        traj{n,i}(2,3),traj{n,i}(3,1), traj{n,i}(3,2),traj{n,i}(3,3),traj{n,i}(1,4),traj{n,i}(2,4),traj{n,i}(3,4),Gripperstate(n)];
+    line =line+1;
+    end
+end    
+writematrix(outputConfigs,'config_array.csv')
+end
+##### SOURCE END #####
+-->
+</body>
+</html>
