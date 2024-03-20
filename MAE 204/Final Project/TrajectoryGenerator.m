@@ -56,5 +56,5 @@ for n=1:8  %n cycles through the 8 traj
     line =line+1;
     end
 end    
-writematrix(outputConfigs,'config_array.csv')
+%writematrix(outputConfigs,'config_array.csv')
 end

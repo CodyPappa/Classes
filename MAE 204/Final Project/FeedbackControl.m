@@ -18,12 +18,13 @@ function [Ve, newXeSum,Xerr] = FeedbackControl(X, Xd, Xdn, Kp, Ki, dt, XeSum)
 % Ve: commanded E-E twist expressed in E-E frame
 % newXeSum: Sum of previous and current Xe errors, passed on to the next 
 %           iteration
+% Xerr: The T matrix that drives X to Xd
 %% Feedforward term  [AdX−1Xd ]Vd(t)
-XdasT = TrowtoSE3(Xd);
-XdnasT= TrowtoSE3(Xdn);
+XdasT=Xd;%XdasT = TrowtoSE3(Xd);
+XdnasT=Xdn;%XdnasT= TrowtoSE3(Xdn);
 Vd = se3ToVec(MatrixLog6(TransInv(XdasT)*XdnasT)/dt);
 %% Preportional term  KpXe(t)
-XasT= TrowtoSE3(X);
+XasT=X;%XasT= TrowtoSE3(X);
 Xerr =se3ToVec(MatrixLog6(TransInv(XasT)*XdasT));
 %%  Integral Term  Ki Sum(Xe(t))
 newXeSum = Xerr*dt +XeSum;
