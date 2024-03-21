@@ -20,14 +20,11 @@ function [Ve, newXeSum,Xerr] = FeedbackControl(X, Xd, Xdn, Kp, Ki, dt, XeSum)
 %           iteration
 % Xerr: The T matrix that drives X to Xd
 %% Feedforward term  [AdX−1Xd ]Vd(t)
-XdasT=Xd;%XdasT = TrowtoSE3(Xd);
-XdnasT=Xdn;%XdnasT= TrowtoSE3(Xdn);
-Vd = se3ToVec(MatrixLog6(TransInv(XdasT)*XdnasT)/dt);
+Vd = se3ToVec(MatrixLog6(TransInv(Xd)*Xdn)/dt);
 %% Preportional term  KpXe(t)
-XasT=X;%XasT= TrowtoSE3(X);
-Xerr =se3ToVec(MatrixLog6(TransInv(XasT)*XdasT));
+Xerr =se3ToVec(MatrixLog6(TransInv(X)*Xd));
 %%  Integral Term  Ki Sum(Xe(t))
 newXeSum = Xerr*dt +XeSum;
 %% Total law
-Ve = Adjoint(TransInv(XasT)*XdasT) * Vd + Kp*Xerr + Ki*newXeSum;
+Ve = Adjoint(TransInv(X)*Xd) * Vd + Kp*Xerr + Ki*newXeSum;
 end
